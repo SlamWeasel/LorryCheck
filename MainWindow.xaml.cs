@@ -59,18 +59,18 @@ namespace Lastwagen_Abfrage
                     "(SELECT TOP 1 Ort FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) AS Position," +
                     "FORMAT(((SELECT TOP 1 LX FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordX," +
                     "FORMAT(((SELECT TOP 1 LY FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordY " +
-                    "FROM XXALkwMsg One " +
+                    "FROM XXALkwMsg One WHERE LX <> 0 AND LY <> 0 " +
                     "GROUP BY LKW ORDER BY LKW", cn) :
                     new SqlCommand(
                     @"" +
-                    "SELECT	" +
+                    "SELECT	TOP 20 " +
                     "One.LKW, " +
-                    "MAX(Datum) AS LastUpdate," +
+                    "Datum AS LastUpdate," +
                     "(SELECT TOP 1 Ort FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) AS Position," +
                     "FORMAT(((SELECT TOP 1 LX FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordX," +
                     "FORMAT(((SELECT TOP 1 LY FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordY " +
                     $"FROM XXALkwMsg One WHERE LKW = '{whitelist}' " +
-                    "GROUP BY LKW ORDER BY LKW", cn);
+                    "GROUP BY LKW, Datum ORDER BY Datum DESC", cn);
                 sqlCommand.CommandTimeout = 600;
                 SqlDataReader read = sqlCommand.ExecuteReader();
 
@@ -82,6 +82,8 @@ namespace Lastwagen_Abfrage
 
                     string _A = read.IsDBNull(0) ? "" : read.GetString(0);
                     loc.LKW = _A;
+                    if (!_A.StartsWith("50") && !_A.StartsWith("60"))
+                        continue;
                     if (isLKWsEmpty) LKWs.Add(_A);
                     DateTime _B = read.IsDBNull(1) ? DateTime.MinValue : read.GetDateTime(1);
                     loc.LastUpdatedUtc = _B;

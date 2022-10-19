@@ -53,23 +53,11 @@ namespace Lastwagen_Abfrage
                 cn.Open();
                 SqlCommand sqlCommand = whitelist == null ? new SqlCommand(
                     @"" +
-                    "SELECT	" +
-                    "One.LKW, " +
-                    "MAX(Datum) AS LastUpdate," +
-                    "(SELECT TOP 1 Ort FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) AS Position," +
-                    "FORMAT(((SELECT TOP 1 LX FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordX," +
-                    "FORMAT(((SELECT TOP 1 LY FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordY " +
-                    "FROM XXALkwMsg One WHERE LX <> 0 AND LY <> 0 " +
+                    "... " +
                     "GROUP BY LKW ORDER BY LKW", cn) :
                     new SqlCommand(
                     @"" +
-                    "SELECT	TOP 20 " +
-                    "One.LKW, " +
-                    "Datum AS LastUpdate," +
-                    "(SELECT TOP 1 Ort FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) AS Position," +
-                    "FORMAT(((SELECT TOP 1 LX FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordX," +
-                    "FORMAT(((SELECT TOP 1 LY FROM XXALkwMsg WHERE Datum = (SELECT MAX(One.Datum)) AND LKW = One.LKW) / 10000.0), 'N4') AS CoordY " +
-                    $"FROM XXALkwMsg One WHERE LKW = '{whitelist}' " +
+                    $"... WHERE LKW = '{whitelist}' " +
                     "GROUP BY LKW, Datum ORDER BY Datum DESC", cn);
                 sqlCommand.CommandTimeout = 600;
                 SqlDataReader read = sqlCommand.ExecuteReader();
